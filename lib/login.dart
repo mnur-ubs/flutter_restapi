@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restapi/controller/product_controller.dart';
-import 'package:flutter_restapi/main.dart';
 import 'package:flutter_restapi/products.dart';
 import 'package:get/get.dart'; 
 

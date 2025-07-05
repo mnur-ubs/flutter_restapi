@@ -7,8 +7,7 @@ class ProductPage extends StatelessWidget {
   final ProductController controller = Get.put(ProductController());
 
   @override
-  Widget build(BuildContext context) {
-    controller.fetchProducts();
+  Widget build(BuildContext context) { 
     return Scaffold(
       appBar: AppBar(title: const Text('Products')),
       body: Obx(() {
@@ -16,16 +15,21 @@ class ProductPage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return ListView.builder(
-          itemCount: controller.products.length,
-          itemBuilder: (context, index) {
-            final product = controller.products[index];
-            return ListTile(
-              leading: Image.network(product.thumbnail),
-              title: Text(product.title),
-              subtitle: Text('\$${product.price}'),
-            );
+        return RefreshIndicator(
+          onRefresh: () async {
+            controller.fetchProducts();
           },
+          child: ListView.builder(
+            itemCount: controller.products.length,
+            itemBuilder: (context, index) {
+              final product = controller.products[index];
+              return ListTile(
+                leading: Image.network(product.thumbnail),
+                title: Text(product.title),
+                subtitle: Text('\$${product.price}'),
+              );
+            },
+          ),
         );
       }),
     );

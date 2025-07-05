@@ -8,10 +8,10 @@ class ApiService extends GetConnect {
   final box = GetStorage();
 
   @override
-  void onInit() {
+  void onInit() { 
     httpClient.baseUrl = baseUrl;
     httpClient.addRequestModifier<Object?>((request) {
-      final accessToken = box.read("access_token");
+      final accessToken = box.read<String>("access_token"); 
       if (accessToken != null) {
         request.headers["Authorization"] = "Bearer $accessToken";
       }
@@ -19,8 +19,7 @@ class ApiService extends GetConnect {
     },);
 
     httpClient.addResponseModifier((request, response) {
-    if (response.statusCode == 401) {
-      // Token expired or unauthorized
+    if (response.statusCode == 401) {  
       GetStorage().remove('access_token');
       Get.offAllNamed('/login');
     }
@@ -29,11 +28,11 @@ class ApiService extends GetConnect {
   }
 
   Future<bool> login(String email, String password) async {
-    final response = await post("/login", { "email": email, "password": password});
+    final response = await httpClient.post("/login", body:{ "email": email, "password": password});
     if (response.statusCode == 200) {
       final accessToken = response.body["access_token"];
       print(accessToken);
-      box.write("access_token", accessToken);
+      await box.write("access_token", accessToken);
       return true;
     }
     return false;
@@ -43,9 +42,8 @@ class ApiService extends GetConnect {
     box.remove("access_token");
   }
 
-  Future<List<Product>> fetchProducts() async {
-    final accessToken = box.read("access_token");
-    final response = await get('/products', headers: { "Authorization": "Bearer $accessToken"});
+  Future<List<Product>> fetchProducts() async { 
+    final response = await httpClient.get('/products');
     print("Response from API:");
     print(response.statusText);
     if (response.status.hasError) {
